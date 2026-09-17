@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<!--
+  login.html — Administrator & User Login Page
+  Student Management System
+  ===========================================
+  Secure, responsive login screen supporting Username or Email authentication,
+  Remember Me options, Forgot Password workflow, and Sign Up navigation.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Student Management System</title>
+  <meta name="description" content="User Login page for the Student Management System." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
+      padding: var(--space-4);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.3s ease;
+      text-align: center;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      padding: 6px;
+      overflow: hidden;
+    }
+
+    .login-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .form-label {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-control {
+      width: 100%;
+      text-align: center;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 11px 16px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .form-options {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.825rem;
+      color: #475569;
+      margin-top: -4px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .remember-me input {
+      accent-color: #2563eb;
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      text-align: center;
+      width: 100%;
+      color: #dc2626;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .alert-banner {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-footer {
+      margin-top: 22px;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .login-footer a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .login-credentials-hint {
+      margin-top: 20px;
+      padding: 12px;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: #475569;
+      text-align: center;
+    }
+
+    .login-credentials-hint code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #1d4ed8;
+      font-family: monospace;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <img src="assets/logo.png" alt="SMS Logo" />
+      </div>
+      <h1 class="login-title">Portal Login</h1>
+      <p class="login-subtitle">Student Management System</p>
+    </div>
+
+    <!-- Alert Box -->
+    <div id="login-alert" class="alert-banner alert-error" role="alert">
+      <span>⚠️</span>
+      <span id="login-alert-text">Invalid Username/Email or password.</span>
+    </div>
+
+    <!-- Success Alert Box -->
+    <div id="login-success" class="alert-banner alert-success" role="alert">
+      <span>✓</span>
+      <span id="login-success-text"></span>
+    </div>
+
+    <form id="login-form" class="login-form" novalidate>
+      <div class="form-group">
+        <label for="username" class="form-label">Username or Email Address</label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control"
+            placeholder="Enter username or email"
+            required
+            autocomplete="username"
+            autofocus
+          />
+        </div>
+        <span class="error-message" id="error-username"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Enter password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+        <span class="error-message" id="error-password"></span>
+      </div>
+
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" id="remember-me" name="remember" checked />
+          <span>Remember Me</span>
+        </label>
+        <a href="#" id="forgot-password-link" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <button type="submit" id="btn-submit" class="btn-login">
+        <span id="btn-text">Sign In</span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      Don't have an account? <a href="signup.html">Create Account</a>
+    </div>
+
+    <div class="login-credentials-hint">
+      Default Admin Credentials:<br/>
+      Username/Email: <code>admin</code> | Password: <code>admin123</code>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if redirected from sign up
+      const regMsg = sessionStorage.getItem('sms_register_success');
+      if (regMsg) {
+        const successBox = document.getElementById('login-success');
+        const successText = document.getElementById('login-success-text');
+        successText.textContent = regMsg;
+        successBox.style.display = 'flex';
+        sessionStorage.removeItem('sms_register_success');
+      }
+
+      // If already logged in, redirect to dashboard
+      if (StudentAPI.isAuthenticated()) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const form = document.getElementById('login-form');
+      const alertBox = document.getElementById('login-alert');
+      const alertText = document.getElementById('login-alert-text');
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnText = document.getElementById('btn-text');
+
+      // Forgot Password interactive prompt
+      document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = prompt('Please enter your registered Email address to reset your password:');
+        if (email && email.trim()) {
+          showToast('Password reset link sent to ' + escapeHtml(email.trim()), 'info', 4000);
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.style.display = 'none';
+
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errUsername = document.getElementById('error-username');
+        const errPassword = document.getElementById('error-password');
+
+        errUsername.textContent = '';
+        errPassword.textContent = '';
+
+        const identifier = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        let valid = true;
+        if (!identifier) {
+          errUsername.textContent = 'Please enter your username or email.';
+          valid = false;
+        }
+        if (!password) {
+          errPassword.textContent = 'Please enter your password.';
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        btnSubmit.disabled = true;
+        btnText.textContent = 'Signing in...';
+
+        try {
+          const response = await StudentAPI.login(identifier, password);
+          if (response?.success) {
+            showToast('Login successful! Redirecting...', 'success');
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 400);
+          } else {
+            alertText.textContent = response?.message || 'Invalid Username/Email or password.';
+            alertBox.style.display = 'flex';
+          }
+        } catch (err) {
+          alertText.textContent = err.message || 'Login failed. Please check your credentials.';
+          alertBox.style.display = 'flex';
+        } finally {
+          btnSubmit.disabled = false;
+          btnText.textContent = 'Sign In';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

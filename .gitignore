@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environment files
+.env
+.env.local
+.venv
+venv/
+ENV/
+env/
+
+# Database & SQLite
+*.sqlite3
+*.db
+
+# IDE & Editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Brain / Antigravity IDE artifacts
+.tempmediaStorage/
+scratch/
+
+# OS generated files
+.DS_Store
+Thumbs.db

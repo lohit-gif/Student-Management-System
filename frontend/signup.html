@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!--
+  signup.html — User Registration / Sign Up Page
+  Student Management System
+  =============================================
+  Professional Blue & White theme, real-time client-side validation,
+  password strength requirements, and seamless integration with Django REST API.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — Student Management System</title>
+  <meta name="description" content="Sign up for a new account on the Student Management System." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
+      padding: 32px 16px;
+    }
+
+    .signup-card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 36px 36px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    .signup-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    }
+
+    .signup-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .signup-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      padding: 6px;
+      overflow: hidden;
+    }
+
+    .signup-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .signup-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .signup-subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .signup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 540px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 0.78rem;
+      margin-top: 4px;
+      min-height: 16px;
+    }
+
+    .password-hint-box {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      color: #475569;
+      margin-top: 2px;
+    }
+
+    .password-hint-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 8px;
+      margin-top: 4px;
+      list-style: none;
+      padding: 0;
+    }
+
+    .password-hint-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+    }
+
+    .password-hint-item.valid {
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-signup {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-signup:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-signup:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .signup-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .signup-footer a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .signup-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-card">
+    <div class="signup-header">
+      <div class="signup-logo">
+        <img src="assets/logo.png" alt="SMS Logo" />
+      </div>
+      <h1 class="signup-title">Create Account</h1>
+      <p class="signup-subtitle">Register to access the Student Management System</p>
+    </div>
+
+    <div id="signup-alert" class="alert-error" role="alert">
+      <span>⚠️</span>
+      <span id="signup-alert-text">Registration failed. Please check your details.</span>
+    </div>
+
+    <form id="signup-form" class="signup-form" novalidate>
+      
+      <!-- Row 1: Full Name & Username -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="full_name" class="form-label">Full Name *</label>
+          <input type="text" id="full_name" name="full_name" class="form-control" placeholder="John Doe" required />
+          <span class="error-message" id="error-full_name"></span>
+        </div>
+        <div class="form-group">
+          <label for="username" class="form-label">Username *</label>
+          <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required />
+          <span class="error-message" id="error-username"></span>
+        </div>
+      </div>
+
+      <!-- Row 2: Email & Phone -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address *</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required />
+          <span class="error-message" id="error-email"></span>
+        </div>
+        <div class="form-group">
+          <label for="phone_number" class="form-label">Phone Number (10 digits) *</label>
+          <input type="tel" id="phone_number" name="phone_number" class="form-control" placeholder="9876543210" maxlength="10" required />
+          <span class="error-message" id="error-phone_number"></span>
+        </div>
+      </div>
+
+      <!-- Row 3: Password & Confirm Password -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password" class="form-label">Password *</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+          <span class="error-message" id="error-password"></span>
+        </div>
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm Password *</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="••••••••" required />
+          <span class="error-message" id="error-confirm_password"></span>
+        </div>
+      </div>
+
+      <!-- Password strength checklist -->
+      <div class="password-hint-box">
+        <strong>Password Requirements:</strong>
+        <ul class="password-hint-list">
+          <li class="password-hint-item" id="rule-length"><span>○</span> Min 8 characters</li>
+          <li class="password-hint-item" id="rule-uppercase"><span>○</span> 1 Uppercase (A-Z)</li>
+          <li class="password-hint-item" id="rule-lowercase"><span>○</span> 1 Lowercase (a-z)</li>
+          <li class="password-hint-item" id="rule-number"><span>○</span> 1 Number (0-9)</li>
+          <li class="password-hint-item" id="rule-special"><span>○</span> 1 Special char (@#$!)</li>
+        </ul>
+      </div>
+
+      <button type="submit" id="btn-submit" class="btn-signup">
+        <span id="btn-text">Create Account</span>
+      </button>
+    </form>
+
+    <div class="signup-footer">
+      Already have an account? <a href="login.html">Log In</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // If already logged in, redirect to dashboard
+      if (StudentAPI.isAuthenticated()) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const form = document.getElementById('signup-form');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirm_password');
+      const alertBox = document.getElementById('signup-alert');
+      const alertText = document.getElementById('signup-alert-text');
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnText = document.getElementById('btn-text');
+
+      // Password strength live updates
+      passwordInput.addEventListener('input', () => {
+        const val = passwordInput.value;
+        setRule('rule-length', val.length >= 8);
+        setRule('rule-uppercase', /[A-Z]/.test(val));
+        setRule('rule-lowercase', /[a-z]/.test(val));
+        setRule('rule-number', /[0-9]/.test(val));
+        setRule('rule-special', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(val));
+      });
+
+      function setRule(id, isValid) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (isValid) {
+          el.classList.add('valid');
+          el.querySelector('span').textContent = '✓';
+        } else {
+          el.classList.remove('valid');
+          el.querySelector('span').textContent = '○';
+        }
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.style.display = 'none';
+
+        // Clear error messages
+        ['full_name', 'username', 'email', 'phone_number', 'password', 'confirm_password'].forEach(id => {
+          const errEl = document.getElementById(`error-${id}`);
+          if (errEl) errEl.textContent = '';
+        });
+
+        const payload = {
+          full_name: document.getElementById('full_name').value.trim(),
+          username: document.getElementById('username').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone_number: document.getElementById('phone_number').value.trim(),
+          password: passwordInput.value,
+          confirm_password: confirmInput.value,
+        };
+
+        // Client-side validation
+        let valid = true;
+        if (!payload.full_name || payload.full_name.length < 2) {
+          showFieldError('full_name', 'Full name must be at least 2 characters.');
+          valid = false;
+        }
+        if (!payload.username) {
+          showFieldError('username', 'Username is required.');
+          valid = false;
+        }
+        if (!payload.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+          showFieldError('email', 'Please enter a valid email address.');
+          valid = false;
+        }
+        const phoneDigits = payload.phone_number.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) {
+          showFieldError('phone_number', 'Phone number must contain exactly 10 digits.');
+          valid = false;
+        }
+        if (payload.password.length < 8 ||
+            !/[A-Z]/.test(payload.password) ||
+            !/[a-z]/.test(payload.password) ||
+            !/[0-9]/.test(payload.password) ||
+            !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(payload.password)) {
+          showFieldError('password', 'Password must satisfy all strength rules below.');
+          valid = false;
+        }
+        if (payload.password !== payload.confirm_password) {
+          showFieldError('confirm_password', 'Passwords do not match.');
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        btnSubmit.disabled = true;
+        btnText.textContent = 'Creating Account...';
+
+        try {
+          const response = await StudentAPI.register(payload);
+          if (response?.success) {
+            showToast('Account created successfully! Redirecting to login...', 'success', 3000);
+            sessionStorage.setItem('sms_register_success', 'Account created successfully! Please log in with your credentials.');
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 1000);
+          } else {
+            handleServerErrors(response);
+          }
+        } catch (err) {
+          if (err.data && err.data.errors) {
+            handleServerErrors(err.data);
+          } else {
+            alertText.textContent = err.message || 'Registration failed. Please try again.';
+            alertBox.style.display = 'flex';
+          }
+        } finally {
+          btnSubmit.disabled = false;
+          btnText.textContent = 'Create Account';
+        }
+      });
+
+      function showFieldError(field, msg) {
+        const el = document.getElementById(`error-${field}`);
+        if (el) el.textContent = msg;
+      }
+
+      function handleServerErrors(data) {
+        if (data.errors) {
+          Object.keys(data.errors).forEach(key => {
+            const errs = data.errors[key];
+            const msg = Array.isArray(errs) ? errs.join(' ') : errs;
+            showFieldError(key, msg);
+          });
+        }
+        alertText.textContent = data.message || 'Validation failed. Please check the highlighted fields.';
+        alertBox.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>

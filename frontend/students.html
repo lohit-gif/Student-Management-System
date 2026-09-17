@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<!--
+  students.html — Students Management Page (CRUD + Search + Filter + Sort)
+  Student Management System
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Students — Student Management System</title>
+  <meta name="description"
+        content="Manage all student records — search, filter, sort, add, edit, and delete." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ---------------------------------------------------------------
+       Student avatar
+    --------------------------------------------------------------- */
+    .student-avatar {
+      width:32px; height:32px; border-radius:50%;
+      background:linear-gradient(135deg,var(--clr-accent-start),var(--clr-accent-end));
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:#fff; flex-shrink:0;
+    }
+    .email-link { color:var(--clr-text-secondary); text-decoration:none; transition:color var(--transition-fast); }
+    .email-link:hover { color:var(--clr-accent); }
+    .table-actions { display:flex; align-items:center; gap:var(--space-2); }
+
+    /* Error highlight */
+    .field-error {
+      border-color:var(--clr-danger) !important;
+      box-shadow:0 0 0 3px rgba(239,68,68,0.15) !important;
+    }
+
+    /* Record count */
+    .record-count-badge {
+      display:inline-flex; align-items:center; gap:var(--space-2);
+      font-size:var(--font-size-sm); color:var(--clr-text-muted); margin-bottom:var(--space-4);
+    }
+    .record-count-number {
+      background:var(--clr-bg-elevated); border:1px solid var(--clr-border);
+      border-radius:var(--radius-full); padding:2px 10px;
+      font-size:var(--font-size-xs); font-weight:600; color:var(--clr-text-secondary);
+    }
+
+    /* Year filter chips */
+    .filter-chips { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+    .filter-chip {
+      padding:var(--space-1) var(--space-3); border-radius:var(--radius-full);
+      font-size:var(--font-size-xs); font-weight:600;
+      background:var(--clr-bg-elevated); border:1px solid var(--clr-border);
+      color:var(--clr-text-secondary); cursor:pointer; transition:all var(--transition-fast);
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background:var(--clr-accent-light); border-color:var(--clr-border-accent); color:var(--clr-accent);
+    }
+
+    /* Department filter select */
+    .dept-filter-wrap {
+      position:relative; display:flex; align-items:center;
+    }
+    .dept-filter-wrap select {
+      background:var(--clr-bg-elevated); border:1px solid var(--clr-border);
+      border-radius:var(--radius-md); color:var(--clr-text-secondary);
+      font-size:var(--font-size-sm); font-weight:500; font-family:inherit;
+      padding:var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+      cursor:pointer; outline:none; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 10px center;
+      transition:border-color var(--transition-fast);
+    }
+    .dept-filter-wrap select:focus { border-color:var(--clr-accent); }
+    .dept-filter-wrap select:hover { border-color:var(--clr-border-accent); }
+
+    /* Active filters bar */
+    #active-filters-bar {
+      display:none; align-items:center; gap:var(--space-3); flex-wrap:wrap;
+      padding:var(--space-3) var(--space-4); background:rgba(99,102,241,0.07);
+      border:1px solid rgba(99,102,241,0.2); border-radius:var(--radius-md);
+      margin-bottom:var(--space-4); font-size:var(--font-size-xs);
+      color:var(--clr-text-secondary);
+    }
+    .active-filter-tag {
+      background:var(--clr-accent-light); color:var(--clr-accent);
+      border-radius:var(--radius-full); padding:2px 10px; font-weight:600;
+    }
+
+    /* Sortable column headers */
+    th[data-sort] { user-select:none; white-space:nowrap; }
+    th[data-sort]:hover { color:var(--clr-text-primary); }
+    .sort-indicator { font-size:0.65rem; vertical-align:middle; color:var(--clr-text-muted); }
+
+    /* Clear filters button */
+    .btn-clear-filters {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:var(--space-1) var(--space-3); border-radius:var(--radius-full);
+      font-size:var(--font-size-xs); font-weight:600;
+      background:var(--clr-danger-light); color:var(--clr-danger);
+      border:1px solid rgba(239,68,68,0.3); cursor:pointer;
+      transition:all var(--transition-fast);
+    }
+    .btn-clear-filters:hover { background:var(--clr-danger); color:#fff; }
+
+    /* ---------------------------------------------------------------
+       Modal
+    --------------------------------------------------------------- */
+    .modal-backdrop {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px); z-index:500;
+      align-items:center; justify-content:center; padding:var(--space-4);
+    }
+    .modal-backdrop.open { display:flex; animation:fadeInUp 0.2s ease; }
+    .modal-panel {
+      background:var(--clr-bg-surface); border:1px solid var(--clr-border);
+      border-radius:var(--radius-xl); width:100%; max-width:640px;
+      max-height:90vh; overflow-y:auto; box-shadow:var(--shadow-lg);
+      scrollbar-width:thin; scrollbar-color:var(--clr-bg-hover) transparent;
+    }
+    .modal-panel::-webkit-scrollbar { width:5px; }
+    .modal-panel::-webkit-scrollbar-thumb { background:var(--clr-bg-hover); border-radius:3px; }
+    .modal-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:var(--space-6) var(--space-6) var(--space-5);
+      border-bottom:1px solid var(--clr-border);
+      position:sticky; top:0; background:var(--clr-bg-surface); z-index:1;
+    }
+    .modal-header h2 { font-size:var(--font-size-lg); font-weight:700; }
+    .modal-close {
+      background:transparent; border:none; color:var(--clr-text-muted);
+      cursor:pointer; padding:var(--space-2); border-radius:var(--radius-sm);
+      font-size:1.2rem; line-height:1; transition:all var(--transition-fast);
+    }
+    .modal-close:hover { color:var(--clr-text-primary); background:var(--clr-bg-hover); }
+    .modal-body { padding:var(--space-6); }
+    .modal-footer {
+      padding:var(--space-4) var(--space-6); border-top:1px solid var(--clr-border);
+      display:flex; justify-content:flex-end; gap:var(--space-3);
+      background:var(--clr-bg-surface); position:sticky; bottom:0;
+    }
+    .form-error-msg {
+      display:block; font-size:var(--font-size-xs); color:var(--clr-danger);
+      margin-top:4px; min-height:1em;
+    }
+
+    /* Responsive */
+    @media (max-width:900px) { .col-phone { display:none; } }
+    @media (max-width:640px) {
+      .filter-chips, .dept-filter-wrap { display:none; }
+      .table-toolbar { flex-direction:column; align-items:stretch; }
+      .table-toolbar-right { justify-content:space-between; }
+      .search-bar { max-width:100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon" aria-hidden="true">
+          <img src="assets/logo.png" alt="SMS Logo" />
+        </div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">SMS Portal</span>
+          <span class="sidebar-brand-sub">Student Management</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Page navigation">
+        <span class="nav-section-label">Main Menu</span>
+        <a href="index.html" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+          <span class="nav-link-label">Dashboard</span>
+        </a>
+        <a href="students.html" class="nav-link active" aria-current="page">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
+          <span class="nav-link-label">Students</span>
+        </a>
+        <span class="nav-section-label" style="margin-top:var(--space-2)">Info</span>
+        <a href="about.html" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+          </svg>
+          <span class="nav-link-label">About</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-dot"></div>
+        <div class="sidebar-footer-info">
+          <span class="sidebar-footer-title">System Online</span>
+          <span class="sidebar-footer-sub">v1.0 — Phase 3</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main column -->
+    <div class="main-column">
+
+      <!-- Topbar -->
+      <header class="topbar" role="banner">
+        <div class="topbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle menu" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2" style="width:22px;height:22px">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+          <div>
+            <div class="topbar-title">Students</div>
+            <div class="topbar-breadcrumb">
+              <a href="index.html" style="color:inherit">Home</a>
+              <span>›</span><span>Students</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button id="add-student-btn" class="btn btn-primary" aria-label="Add new student">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add Student
+          </button>
+          <div id="user-profile-trigger" style="display:flex;align-items:center;gap:10px;cursor:pointer;" title="View Profile">
+            <div id="user-badge" class="topbar-avatar">A</div>
+            <span id="user-name-text" style="font-size:0.875rem;font-weight:600;color:var(--clr-text-primary);">Admin</span>
+          </div>
+          <button id="btn-logout" class="btn btn-secondary btn-sm" title="Logout" style="display:inline-flex;align-items:center;gap:6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25" />
+            </svg>
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="page-content" id="main-content">
+
+        <div class="page-header animate-in">
+          <h1>Student Records</h1>
+          <p>Search, filter, sort, and manage all student records. All changes sync instantly with the database.</p>
+        </div>
+
+        <div class="card animate-in">
+
+          <!-- ============================================================
+               TOOLBAR ROW 1: Search + Dept filter + Add button
+          ============================================================ -->
+          <div class="table-toolbar">
+            <!-- Search -->
+            <div class="search-bar">
+              <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input type="search" id="student-search" class="search-input"
+                     placeholder="Search ID, name, email, department…"
+                     aria-label="Search students" autocomplete="off" />
+            </div>
+
+            <div class="table-toolbar-right">
+              <!-- Department filter dropdown -->
+              <div class="dept-filter-wrap">
+                <select id="dept-filter"
+                        aria-label="Filter by department"
+                        onchange="onDeptFilterChange(this.value)">
+                  <option value="">All Departments</option>
+                </select>
+              </div>
+
+              <!-- Clear filters -->
+              <button id="clear-filters-btn" class="btn-clear-filters"
+                      title="Clear all filters" aria-label="Clear all filters">
+                ✕ Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               TOOLBAR ROW 2: Year filter chips
+          ============================================================ -->
+          <div class="filter-chips" style="margin-bottom:var(--space-4)"
+               role="group" aria-label="Filter by year">
+            <button class="filter-chip active" data-year="">All Years</button>
+            <button class="filter-chip" data-year="1">Year 1</button>
+            <button class="filter-chip" data-year="2">Year 2</button>
+            <button class="filter-chip" data-year="3">Year 3</button>
+            <button class="filter-chip" data-year="4">Year 4</button>
+          </div>
+
+          <!-- ============================================================
+               ACTIVE FILTERS BAR
+          ============================================================ -->
+          <div id="active-filters-bar" role="status" aria-live="polite">
+            <span>Active filters:</span>
+            <span id="active-filter-tags"></span>
+            <button class="btn-clear-filters" onclick="clearAllFilters()">✕ Clear all</button>
+          </div>
+
+          <!-- Record count -->
+          <div class="record-count-badge">
+            Showing
+            <span class="record-count-number" id="record-count">—</span>
+            students
+          </div>
+
+          <!-- ============================================================
+               STUDENT TABLE with sortable headers
+          ============================================================ -->
+          <div class="table-wrapper" role="region" aria-label="Student records table">
+            <table id="students-table" aria-label="Student records">
+              <thead>
+                <tr>
+                  <th scope="col" data-sort="student_id">
+                    Student ID <span class="sort-indicator" aria-hidden="true">⇅</span>
+                  </th>
+                  <th scope="col" data-sort="full_name">
+                    Name <span class="sort-indicator" aria-hidden="true">⇅</span>
+                  </th>
+                  <th scope="col" data-sort="department">
+                    Department <span class="sort-indicator" aria-hidden="true">⇅</span>
+                  </th>
+                  <th scope="col" data-sort="year">
+                    Year <span class="sort-indicator" aria-hidden="true">⇅</span>
+                  </th>
+                  <th scope="col">Email</th>
+                  <th scope="col" class="col-phone">Phone</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="student-table-body" aria-live="polite">
+                <!-- Populated by students.js -->
+              </tbody>
+            </table>
+          </div>
+
+        </div><!-- /.card -->
+      </main>
+    </div><!-- /.main-column -->
+  </div><!-- /.app-shell -->
+
+
+  <!-- =====================================================================
+       ADD / EDIT STUDENT MODAL
+  ====================================================================== -->
+  <div id="student-modal" class="modal-backdrop"
+       role="dialog" aria-modal="true"
+       aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-panel">
+
+      <div class="modal-header">
+        <h2 id="modal-title">Add New Student</h2>
+        <button id="modal-close-btn" class="modal-close" aria-label="Close modal">✕</button>
+      </div>
+
+      <form id="student-form" novalidate>
+        <div class="modal-body">
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="field-student-id">
+                Student ID <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input type="text" id="field-student-id" name="student_id"
+                     class="form-input" placeholder="e.g. STU-001"
+                     autocomplete="off" maxlength="20" required />
+              <span class="form-error-msg" id="err-student-id" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="field-full-name">
+                Full Name <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input type="text" id="field-full-name" name="full_name"
+                     class="form-input" placeholder="e.g. Priya Sharma"
+                     autocomplete="name" required />
+              <span class="form-error-msg" id="err-full-name" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="field-department">
+                Department <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input type="text" id="field-department" name="department"
+                     class="form-input" placeholder="e.g. Computer Science"
+                     autocomplete="off" required />
+              <span class="form-error-msg" id="err-department" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="field-year">
+                Academic Year <span class="required" aria-hidden="true">*</span>
+              </label>
+              <select id="field-year" name="year" class="form-select" required>
+                <option value="">— Select Year —</option>
+                <option value="1">First Year</option>
+                <option value="2">Second Year</option>
+                <option value="3">Third Year</option>
+                <option value="4">Fourth Year</option>
+              </select>
+              <span class="form-error-msg" id="err-year" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="field-email">
+                Email Address <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input type="email" id="field-email" name="email"
+                     class="form-input" placeholder="student@example.com"
+                     autocomplete="email" required />
+              <span class="form-error-msg" id="err-email" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="field-phone">
+                Phone Number <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input type="tel" id="field-phone" name="phone_number"
+                     class="form-input" placeholder="+919876543210"
+                     autocomplete="tel" required />
+              <span class="form-error-msg" id="err-phone" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="field-address">
+              Address <span class="required" aria-hidden="true">*</span>
+            </label>
+            <textarea id="field-address" name="address"
+                      class="form-textarea" placeholder="Full residential address…"
+                      rows="3" required></textarea>
+            <span class="form-error-msg" id="err-address" role="alert"></span>
+          </div>
+
+        </div><!-- /.modal-body -->
+
+        <div class="modal-footer">
+          <button type="button" id="modal-cancel-btn" class="btn btn-ghost">Cancel</button>
+          <button type="submit" id="form-submit-btn" class="btn btn-primary">
+            <span id="modal-submit-label">Add Student</span>
+          </button>
+        </div>
+      </form>
+
+    </div><!-- /.modal-panel -->
+  </div><!-- /#student-modal -->
+
+  <script src="js/api.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

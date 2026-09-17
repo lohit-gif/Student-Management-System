@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!--
+  about.html — About Page
+  Student Management System
+  ==========================
+  Describes the project, tech stack, API endpoints, and features.
+  Also shows a live backend connection status indicator.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>About — Student Management System</title>
+  <meta name="description"
+        content="Learn about the Student Management System — its tech stack, features, and REST API architecture." />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+  <!-- Global design system -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ---------------------------------------------------------------
+       About page — supplemental styles
+    --------------------------------------------------------------- */
+
+    /* Connection status chip in hero */
+    .api-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: var(--clr-bg-elevated);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      color: var(--clr-text-secondary);
+    }
+
+    #api-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--clr-warning);
+      flex-shrink: 0;
+      animation: pulse 2s ease infinite;
+    }
+
+    /* Project meta info table */
+    .meta-table {
+      width: 100%;
+      font-size: var(--font-size-sm);
+      border-collapse: collapse;
+    }
+
+    .meta-table tr { border-bottom: 1px solid var(--clr-border); }
+    .meta-table tr:last-child { border-bottom: none; }
+
+    .meta-table th {
+      text-align: left;
+      padding: var(--space-3) var(--space-4);
+      color: var(--clr-text-muted);
+      font-weight: 600;
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 140px;
+      background: var(--clr-bg-elevated);
+    }
+
+    .meta-table td {
+      padding: var(--space-3) var(--space-4);
+      color: var(--clr-text-secondary);
+    }
+
+    /* Section container */
+    .about-section {
+      margin-bottom: var(--space-10);
+    }
+
+    /* Gradient heading decoration */
+    .section-heading {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      margin-bottom: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .section-heading-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--clr-accent-start), var(--clr-accent-end));
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- =====================================================================
+       APP SHELL
+  ====================================================================== -->
+  <div class="app-shell">
+
+    <!-- =================================================================
+         SIDEBAR NAVIGATION
+    ================================================================== -->
+    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon" aria-hidden="true">
+          <img src="assets/logo.png" alt="SMS Logo" />
+        </div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">SMS Portal</span>
+          <span class="sidebar-brand-sub">Student Management</span>
+        </div>
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="sidebar-nav" aria-label="Page navigation">
+        <span class="nav-section-label">Main Menu</span>
+
+        <a href="index.html" id="nav-home" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0
+                  .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621
+                  0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25
+                  21h8.25" />
+          </svg>
+          <span class="nav-link-label">Dashboard</span>
+        </a>
+
+        <a href="students.html" id="nav-students" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125
+                  0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318
+                  12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0
+                  0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25
+                  2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
+          <span class="nav-link-label">Students</span>
+        </a>
+
+        <span class="nav-section-label" style="margin-top:var(--space-2)">Info</span>
+
+        <!-- About (active) -->
+        <a href="about.html" id="nav-about" class="nav-link active" aria-current="page">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0
+                  001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+          </svg>
+          <span class="nav-link-label">About</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-dot" aria-label="System online"></div>
+        <div class="sidebar-footer-info">
+          <span class="sidebar-footer-title">System Online</span>
+          <span class="sidebar-footer-sub">v1.0 — Phase 1</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =================================================================
+         MAIN COLUMN
+    ================================================================== -->
+    <div class="main-column">
+
+      <!-- Top bar -->
+      <header class="topbar" role="banner">
+        <div class="topbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle"
+                  aria-label="Toggle navigation menu" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2" style="width:22px;height:22px">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+
+          <div>
+            <div class="topbar-title">About</div>
+            <div class="topbar-breadcrumb">
+              <a href="index.html" style="color:inherit">Home</a>
+              <span>›</span>
+              <span>About</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live API status chip -->
+          <div class="api-status-chip" aria-live="polite">
+            <span id="api-status-dot" aria-hidden="true"></span>
+            <span id="api-status-text">Checking…</span>
+          </div>
+          <div id="user-profile-trigger" style="display:flex;align-items:center;gap:10px;cursor:pointer;" title="View Profile">
+            <div id="user-badge" class="topbar-avatar">A</div>
+            <span id="user-name-text" style="font-size:0.875rem;font-weight:600;color:var(--clr-text-primary);">Admin</span>
+          </div>
+          <button id="btn-logout" class="btn btn-secondary btn-sm" title="Logout" style="display:inline-flex;align-items:center;gap:6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25" />
+            </svg>
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="page-content" id="main-content">
+
+        <!-- Hero -->
+        <div class="about-hero animate-in">
+          <h1>
+            Student Management
+            <span class="text-gradient">System</span>
+          </h1>
+          <p>
+            A full-stack CRUD web application built with Django REST Framework
+            and a standalone HTML/CSS/JS frontend, designed for educational institutions.
+          </p>
+          <div style="display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap">
+            <span class="badge badge-indigo">Phase 1 — Scaffold</span>
+            <span class="badge badge-green">REST API Ready</span>
+            <span class="badge badge-blue">SQLite Database</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------------------------------------
+             PROJECT INFO
+        --------------------------------------------------------------- -->
+        <section class="about-section animate-in" aria-labelledby="section-info">
+          <h2 id="section-info" class="section-heading">
+            <span class="section-heading-dot" aria-hidden="true"></span>
+            Project Information
+          </h2>
+
+          <div class="card">
+            <table class="meta-table" aria-label="Project metadata">
+              <tbody>
+                <tr>
+                  <th scope="row">Project Name</th>
+                  <td>Student Management System (SMS)</td>
+                </tr>
+                <tr>
+                  <th scope="row">Version</th>
+                  <td>1.0.0 — Phase 1 (Scaffold)</td>
+                </tr>
+                <tr>
+                  <th scope="row">Frontend</th>
+                  <td>HTML5, CSS3 (Vanilla), JavaScript (ES6+)</td>
+                </tr>
+                <tr>
+                  <th scope="row">Backend</th>
+                  <td>Django 4.2 + Django REST Framework 3.15</td>
+                </tr>
+                <tr>
+                  <th scope="row">Database</th>
+                  <td>SQLite 3 (auto-created via Django migrations)</td>
+                </tr>
+                <tr>
+                  <th scope="row">API Format</th>
+                  <td>JSON over HTTP REST</td>
+                </tr>
+                <tr>
+                  <th scope="row">CORS</th>
+                  <td>django-cors-headers (all origins allowed in dev)</td>
+                </tr>
+                <tr>
+                  <th scope="row">Architecture</th>
+                  <td>Decoupled Frontend / Backend (SPA-style)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ---------------------------------------------------------------
+             TWO-COLUMN: TECH STACK + FEATURES
+        --------------------------------------------------------------- -->
+        <div class="about-grid animate-in">
+
+          <!-- Technology stack -->
+          <section aria-labelledby="section-tech">
+            <h2 id="section-tech" class="section-heading">
+              <span class="section-heading-dot" aria-hidden="true"></span>
+              Technology Stack
+            </h2>
+
+            <div class="tech-grid">
+              <div class="tech-card" id="tech-django">
+                <div class="tech-card-icon" aria-hidden="true">🐍</div>
+                <div class="tech-card-name">Django 4.2</div>
+                <div class="tech-card-desc">Python web framework — backend core</div>
+              </div>
+              <div class="tech-card" id="tech-drf">
+                <div class="tech-card-icon" aria-hidden="true">🔌</div>
+                <div class="tech-card-name">DRF 3.15</div>
+                <div class="tech-card-desc">REST API toolkit for Django</div>
+              </div>
+              <div class="tech-card" id="tech-sqlite">
+                <div class="tech-card-icon" aria-hidden="true">🗄️</div>
+                <div class="tech-card-name">SQLite 3</div>
+                <div class="tech-card-desc">Embedded relational database</div>
+              </div>
+              <div class="tech-card" id="tech-html">
+                <div class="tech-card-icon" aria-hidden="true">🌐</div>
+                <div class="tech-card-name">HTML5</div>
+                <div class="tech-card-desc">Semantic page structure</div>
+              </div>
+              <div class="tech-card" id="tech-css">
+                <div class="tech-card-icon" aria-hidden="true">🎨</div>
+                <div class="tech-card-name">CSS3</div>
+                <div class="tech-card-desc">Custom design system + animations</div>
+              </div>
+              <div class="tech-card" id="tech-js">
+                <div class="tech-card-icon" aria-hidden="true">⚡</div>
+                <div class="tech-card-name">JavaScript</div>
+                <div class="tech-card-desc">ES6+ frontend logic</div>
+              </div>
+              <div class="tech-card" id="tech-cors">
+                <div class="tech-card-icon" aria-hidden="true">🔓</div>
+                <div class="tech-card-name">CORS Headers</div>
+                <div class="tech-card-desc">Cross-origin request handling</div>
+              </div>
+              <div class="tech-card" id="tech-json">
+                <div class="tech-card-icon" aria-hidden="true">📦</div>
+                <div class="tech-card-name">JSON API</div>
+                <div class="tech-card-desc">Structured data exchange format</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- System features -->
+          <section aria-labelledby="section-features">
+            <h2 id="section-features" class="section-heading">
+              <span class="section-heading-dot" aria-hidden="true"></span>
+              System Features
+            </h2>
+
+            <div class="feature-list">
+              <div class="feature-item" id="feat-dashboard">
+                <div class="feature-item-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25
+                          2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25
+                          0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25
+                          2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0
+                          0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5
+                          15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0
+                          0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                  </svg>
+                </div>
+                <div class="feature-item-text">
+                  <h4>Dashboard Overview</h4>
+                  <p>Stats cards, activity feed, and quick navigation links</p>
+                </div>
+              </div>
+
+              <div class="feature-item" id="feat-students">
+                <div class="feature-item-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125
+                          4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15
+                          19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375
+                          6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0
+                          016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                  </svg>
+                </div>
+                <div class="feature-item-text">
+                  <h4>Student Management (Phase 2)</h4>
+                  <p>Full CRUD — create, read, update, delete student records</p>
+                </div>
+              </div>
+
+              <div class="feature-item" id="feat-search">
+                <div class="feature-item-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0
+                          0010.607 10.607z" />
+                  </svg>
+                </div>
+                <div class="feature-item-text">
+                  <h4>Search &amp; Filter (Phase 2)</h4>
+                  <p>Real-time search by name, ID, department; filter by year</p>
+                </div>
+              </div>
+
+              <div class="feature-item" id="feat-api">
+                <div class="feature-item-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021
+                          18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0
+                          002.25 2.25z" />
+                  </svg>
+                </div>
+                <div class="feature-item-text">
+                  <h4>REST API Architecture</h4>
+                  <p>JSON endpoints with consistent response envelopes</p>
+                </div>
+              </div>
+
+              <div class="feature-item" id="feat-responsive">
+                <div class="feature-item-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25
+                          2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3
+                          18.75h3" />
+                  </svg>
+                </div>
+                <div class="feature-item-text">
+                  <h4>Responsive Design</h4>
+                  <p>Mobile, tablet, and desktop layouts with collapsible sidebar</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div><!-- /.about-grid -->
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------------------------------------
+             REST API ENDPOINTS
+        --------------------------------------------------------------- -->
+        <section class="about-section animate-in" aria-labelledby="section-api">
+          <h2 id="section-api" class="section-heading">
+            <span class="section-heading-dot" aria-hidden="true"></span>
+            REST API Endpoints
+          </h2>
+
+          <p style="margin-bottom:var(--space-5)">
+            All endpoints are served from
+            <code style="background:var(--clr-bg-elevated);padding:2px 8px;border-radius:4px;
+            font-size:0.8rem;color:var(--clr-accent)">http://127.0.0.1:8000/api/</code>
+          </p>
+
+          <div class="card">
+            <div class="api-route" id="api-get-list">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-route-path">/api/students/</span>
+              <span class="api-route-desc">List all students</span>
+            </div>
+            <div class="api-route" id="api-post-create">
+              <span class="method-badge method-post">POST</span>
+              <span class="api-route-path">/api/students/</span>
+              <span class="api-route-desc">Create a new student</span>
+            </div>
+            <div class="api-route" id="api-get-detail">
+              <span class="method-badge method-get">GET</span>
+              <span class="api-route-path">/api/students/&#123;id&#125;/</span>
+              <span class="api-route-desc">Retrieve one student</span>
+            </div>
+            <div class="api-route" id="api-put-update">
+              <span class="method-badge method-put">PUT</span>
+              <span class="api-route-path">/api/students/&#123;id&#125;/</span>
+              <span class="api-route-desc">Full update</span>
+            </div>
+            <div class="api-route" id="api-patch-update">
+              <span class="method-badge method-patch">PATCH</span>
+              <span class="api-route-path">/api/students/&#123;id&#125;/</span>
+              <span class="api-route-desc">Partial update</span>
+            </div>
+            <div class="api-route" id="api-delete">
+              <span class="method-badge method-delete">DELETE</span>
+              <span class="api-route-path">/api/students/&#123;id&#125;/</span>
+              <span class="api-route-desc">Delete a student</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------------------------------------------------------------
+             DATA MODEL
+        --------------------------------------------------------------- -->
+        <section class="about-section animate-in" aria-labelledby="section-model">
+          <h2 id="section-model" class="section-heading">
+            <span class="section-heading-dot" aria-hidden="true"></span>
+            Student Data Model
+          </h2>
+
+          <div class="card">
+            <table class="meta-table" aria-label="Student model fields">
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">student_id</code></td>
+                  <td>CharField (20)</td>
+                  <td>Unique institutional ID — e.g. STU-001</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">full_name</code></td>
+                  <td>CharField (150)</td>
+                  <td>Student's complete name</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">department</code></td>
+                  <td>CharField (100)</td>
+                  <td>Academic department name</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">year</code></td>
+                  <td>IntegerField</td>
+                  <td>Choices: 1 = First … 4 = Fourth Year</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">email</code></td>
+                  <td>EmailField</td>
+                  <td>Unique — used as contact identifier</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">phone_number</code></td>
+                  <td>CharField (20)</td>
+                  <td>Includes country code if applicable</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-accent)">address</code></td>
+                  <td>TextField</td>
+                  <td>Full residential / mailing address</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-text-muted)">created_at</code></td>
+                  <td>DateTimeField</td>
+                  <td>Auto-set on creation (read-only)</td>
+                </tr>
+                <tr>
+                  <td><code style="color:var(--clr-text-muted)">updated_at</code></td>
+                  <td>DateTimeField</td>
+                  <td>Auto-updated on every save (read-only)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main><!-- /#main-content -->
+    </div><!-- /.main-column -->
+  </div><!-- /.app-shell -->
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/about.js"></script>
+</body>
+</html>
